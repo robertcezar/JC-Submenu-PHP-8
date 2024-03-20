@@ -1,11 +1,11 @@
-<?php 
+<?php
 /*
 	Plugin Name: JC Submenu
-	Plugin URI: http://jamescollings.co.uk/blog/jc-submenu-dynamic-wordpress-menu-plugin/
+	Plugin URI: https://wordpress.org/plugins/jc-submenu/
 	Description: Wordpress Submenu Plugin, automatically populate your navigation menus with custom post_types, taxonomies, or child pages. An easy to use plugin created to be a lightweight menu extension.
-	Version: 0.8.4
+	Version: 0.9.1
 	Author: James Collings
-	Author URI: http://www.jamescollings.co.uk
+	Author URI: https://www.jclabs.co.uk/
  */
 
 /**
@@ -14,23 +14,23 @@
  * Core plugin file, load all required classes
  * 
  * @author James Collings <james@jclabs.co.uk>
- * @version 0.8.4
+ * @version 0.9.1
  */
 class JCSubmenu{
 
-	var $version = '0.8.4';
-	var $version_check = 70;
-	var $plugin_dir = false;
-	var $plugin_url = false;
-	var $prefix = 'jc-submenu';
-	var $edit_walker = false;
-	var $public_walker = true;
+	public $version = '0.9.1';
+	public $version_check = 71;
+	public $plugin_dir = false;
+	public $plugin_url = false;
+	public $prefix = 'jc-submenu';
+	public $edit_walker = false;
+	public $public_walker = true;
 
 	/**
 	 * Setup plugin
- 	 * @return void
+	 * @return void
 	 */
-	function __construct(){
+	public function __construct(){
 
 		$this->plugin_dir =  plugin_dir_path( __FILE__ );
 		$this->plugin_url = plugins_url( '/', __FILE__ );
@@ -72,7 +72,7 @@ class JCSubmenu{
 	 * @param  array $args 
 	 * @return array       
 	 */
-	function attach_menu_walker($args){
+	public function attach_menu_walker($args){
 		if(empty($args['walker'])){
 			$args['walker'] = new JC_Submenu_Nav_Walker();
 		}
@@ -85,7 +85,7 @@ class JCSubmenu{
 	 * @param  array  $menu_items
 	 * @return array new menu items
 	 */
-	function populate_menu_items($menu_items = array()){
+	public function populate_menu_items($menu_items = array()){
 
 		$walker = new JC_Submenu_Nav_Walker();
 		$menu_items = $walker->attach_elements($menu_items);
@@ -98,7 +98,7 @@ class JCSubmenu{
 	 * Load Required Modules
 	 * @return void 
 	 */
-	function load_modules(){
+	public function load_modules(){
 
 		include 'walkers/AdminMenuWalker.php';
 		include 'walkers/SubmenuWalker.php';
@@ -115,20 +115,22 @@ class JCSubmenu{
 	/**
 	 * Slit Menu Section Shortcode
 	 *
-	 * Display a dynamic split menu section via wordpress shortcode tags
+	 * Display a dynamic split menu section via WordPress shortcode tags
 	 * 
 	 * @param  array $atts 
 	 * @return string
 	 */
-	function split_menu_shortcode($atts){
-		extract(shortcode_atts( array(
+	public function split_menu_shortcode($atts){
+		$atts = shortcode_atts( array(
 			'hierarchy' => 1,
 			'start' => 0,
 			'depth' => 5,
 			'show_parent' => 0,
 			'menu' => false,
 			'trigger_depth' => 0
-		), $atts ));
+		), $atts );
+
+		extract($atts);
 
 		if(!$menu)
 			return false;
@@ -151,19 +153,21 @@ class JCSubmenu{
 	/**
 	 * Menu Section Shortcode
 	 *
-	 * Display section of menu via wordpress shortcode tags
+	 * Display section of menu via WordPress shortcode tags
 	 * 
 	 * @param  array $atts 
 	 * @return string
 	 */
-	function menu_section_shortcode($atts){
-		extract(shortcode_atts( array(
+	public function menu_section_shortcode($atts){
+		$atts = shortcode_atts( array(
 			'hierarchy' => 1,
 			'start' => 0,
 			'depth' => 5,
 			'show_parent' => 0,
 			'menu' => false
-		), $atts ));
+		), $atts );
+
+		extract($atts);
 
 		if(!$menu)
 			return false;
@@ -191,7 +195,7 @@ class JCSubmenu{
 	 * @param  array  $args
 	 * @return void
 	 */
-	function output_menu_section($menu, $args = array()){
+	public function output_menu_section($menu, $args = array()){
 
 		$debug = isset($args['debug']) ? $args['debug'] : false;
 		$hierarchical = isset($args['hierarchy']) ? $args['hierarchy'] : 1;
@@ -205,8 +209,7 @@ class JCSubmenu{
 			'menu_item' => $start, 
 			'menu_depth' => $depth, 
 			'show_parent' => $show_parent
-			))
-		);
+		)));
 
 		if(isset($args['menu_class']))
 			$options['menu_class'] = $args['menu_class'];
@@ -235,7 +238,7 @@ class JCSubmenu{
 	 * @param  array  $args
 	 * @return void
 	 */
-	function output_split_menu($menu, $args = array()){
+	public function output_split_menu($menu, $args = array()){
 
 		$hierarchical = isset($args['hierarchy']) ? $args['hierarchy'] : 1;
 		$menu_start = isset($args['start']) ? $args['start'] : 1;
@@ -276,4 +279,10 @@ class JCSubmenu{
 }
 
 $GLOBALS['jcsubmenu'] = new JCSubmenu();
-?>
+
+
+add_filter('jcs/enable_public_walker', 'jc_disable_public_walker');
+
+function jc_disable_public_walker($default){
+    return false;
+}
