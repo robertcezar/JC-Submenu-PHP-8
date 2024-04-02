@@ -2,7 +2,7 @@
   "name": "jc-submenu",
   "version": "0.8.3",
   "devDependencies": {
-    "grunt": "^0.4.5",
+    "grunt": "^1.6.1",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-copy": "^0.7.0",
     "grunt-contrib-cssmin": "^0.10.0",
